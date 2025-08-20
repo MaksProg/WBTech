@@ -36,18 +36,18 @@ func (c *Consumer) Run(ctx context.Context) error {
 		var o model.Order
 		if err := json.Unmarshal(m.Value, &o); err != nil {
 			log.Printf("invalid message: %v", err)
-			continue // игнорируем некорректные сообщения
+			continue 
 		}
 		if o.OrderUID == "" {
 			log.Printf("invalid order: missing order_uid")
 			continue
 		}
-		// сохраняем в БД (транзакция внутри)
+	
 		if err := c.store.InsertOrder(ctx, &o); err != nil {
 			log.Printf("db error: %v", err)
 			continue
 		}
-		// обновляем кэш
+
 		c.cache.Set(&o)
 	}
 }
